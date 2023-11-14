@@ -14,8 +14,6 @@
 
 #define USE_KINETO
 
-#include <opencv2/opencv.hpp>
-#include <ATen/metal/Context.h>
 #include <torch/script.h>
 #include <torch/csrc/jit/mobile/import.h>
 #include <torch/csrc/jit/mobile/module.h>
@@ -219,18 +217,18 @@ static void loadAndForwardModel(JNIEnv *env, jclass, jstring jModelPath) {
     bool FLAGS_full_profile = false;
     int FLAGS_iter = 10;
     std::vector<float> times;
-    std::string trace_file_name = "/data/data/org.pytorch.nativeapp/files/trace.txt";
 
-    torch::jit::mobile::KinetoEdgeCPUProfiler profiler(
-            module,
-            trace_file_name,
-            FLAGS_full_profile, // record input_shapes
-            FLAGS_full_profile, // profile memory
-            true, // record callstack
-            FLAGS_full_profile, // record flops
-            FLAGS_full_profile, // record module hierarchy
-            {}, // performance events
-            false); // adjust_vulkan_timestamps
+    // std::string trace_file_name = "/data/data/org.pytorch.nativeapp/files/trace.txt";
+    // torch::jit::mobile::KinetoEdgeCPUProfiler profiler(
+    //         module,
+    //         trace_file_name,
+    //         FLAGS_full_profile, // record input_shapes
+    //         FLAGS_full_profile, // profile memory
+    //         true, // record callstack
+    //         FLAGS_full_profile, // record flops
+    //         FLAGS_full_profile, // record module hierarchy
+    //         {}, // performance events
+    //         false); // adjust_vulkan_timestamps
     for (int i = 0; i < FLAGS_iter; ++i) {
         auto start = std::chrono::high_resolution_clock::now();
         ALOGI("start %lld", std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
@@ -243,15 +241,15 @@ static void loadAndForwardModel(JNIEnv *env, jclass, jstring jModelPath) {
     for (const auto & dur: times) {
         ALOGI("%lf", dur);
     }
-    profiler.disableProfiler();
-    const auto & result = profiler.getProfilerResult();
-
-    ALOGI("%ld", result->trace_start_us());
-    for (const auto & event: result->events()) {
-        ALOGI("%s", event.name().c_str());
-        ALOGI("%ld", event.startUs());
-        ALOGI("%ld", event.durationUs());
-    }
+    // profiler.disableProfiler();
+    // const auto & result = profiler.getProfilerResult();
+    //
+    // ALOGI("%ld", result->trace_start_us());
+    // for (const auto & event: result->events()) {
+    //     ALOGI("%s", event.name().c_str());
+    //     ALOGI("%ld", event.startUs());
+    //     ALOGI("%ld", event.durationUs());
+    // }
 
     env->ReleaseStringUTFChars(jModelPath, modelPath);
 }

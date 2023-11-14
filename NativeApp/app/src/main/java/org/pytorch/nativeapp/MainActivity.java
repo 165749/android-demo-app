@@ -38,9 +38,10 @@ public class MainActivity extends AppCompatActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    String model = "mobilenet_w1.ptl";
     super.onCreate(savedInstanceState);
     final String modelFileAbsoluteFilePath =
-        new File(assetFilePath(this, "compute.pt")).getAbsolutePath();
+        new File(assetFilePath(this, model)).getAbsolutePath();
     NativeClient.loadAndForwardModel(modelFileAbsoluteFilePath);
   }
 }
